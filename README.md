@@ -9,4 +9,11 @@
 
 Enjoy it.
 
+### Dicts
+
 ITA Dicts: http://www.gilda.it/giochidiparole/elenchi.htm
+
+### Developers
+
+* kopiro (destefano.flavio@gmail.com)
+* lastguest (lastguest@gmail.com)
