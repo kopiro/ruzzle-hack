@@ -1,0 +1,4 @@
+# RuzzleHack
+
+## PHP Ruzzle Solver
+
