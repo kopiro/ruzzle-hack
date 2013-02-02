@@ -1,4 +1,3 @@
-# RuzzleHack
+# RuzzleHack: RuzzleSolver in PHP
 
-## PHP Ruzzle Solver
-
+ITA Dicts: http://www.gilda.it/giochidiparole/elenchi.htm
