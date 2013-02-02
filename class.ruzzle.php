@@ -79,12 +79,8 @@ class RuzzleHack {
 		if ($start==0) $found = false;
 		if ($start==strlen($word)) return true;
 
-		$c = $word[$start]; if (!isset($c)) return;
-
-		if ($word=='dilianero') {
-			for($i=0;$i<$start;$i++)echo"\t";
-				echo "start($c){\n";
-		}
+		$c = $word[$start];
+		if (!isset($c)) return;
 
 		foreach ($this->matrix_origins[$c] as $origin)
 		{
@@ -92,30 +88,19 @@ class RuzzleHack {
 			if (!in_array($origin, $path))
 			{
 				array_push($path, $origin);
-				if ($word=='dilianero')
-				{
-					for($i=0;$i<=$start;$i++)echo"\t";
-						echo $c,"==","s",$start,"x",$origin[0],"y",$origin[1],"p",$this->print_path($path);
-				}
 				if ($this->is_endpath_valid($path))
 				{
-					if ($word=='dilianero') echo "=>V\n";
 					if ( true===$this->check_word($word, $start+1, $path) ) $found = $path;
 					array_pop($path);
 				}
 				else
 				{
-					if ($word=='dilianero') echo "=>X\n";
 					array_pop($path);
 				}
 			}
 		}
 
 		if ($found) return $found;
-		if ($word=='dilianero') {
-			for($i=0;$i<$start;$i++)echo"\t";
-				echo "}end($c)\n";
-		}
 		return false;
 	}
 
