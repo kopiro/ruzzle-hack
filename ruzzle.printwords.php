@@ -4,8 +4,8 @@ include 'class.ruzzle.php';
 
 $r = new RuzzleHack();
 
-$r->init();
-$r->load_set($argv[1]);
+$r->init($argv[1]);
+$r->load_set($argv[2]);
 
 echo "YOUR MATRIX:\n";
 $r->print_matrix();

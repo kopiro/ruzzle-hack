@@ -12,11 +12,11 @@ class RuzzleHack
 	protected $matrix_info = [];
 	protected $is_near = [];
 	protected $words = [];
-	protected $dict_path = 'ITA.dict';
+	protected $dict_path;
 
-	public function __construct()
+	public function __construct($lang='ENG')
 	{
-		$this->dict_path = __DIR__."/".$this->dict_path;
+		$this->dict_path = __DIR__."/".$lang.'.dict';
 	}
 
 	public function init()
