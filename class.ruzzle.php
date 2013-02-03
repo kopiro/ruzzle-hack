@@ -21,7 +21,7 @@ class RuzzleHack
 
 	public function init()
 	{
-		if (!file_exists($this->dict_path.'/check')) die("No dict available");
+		if (!file_exists($this->dict_path.'/check')) die("No valid DICT ({$this->dict_path})");
 		$this->is_near = unserialize(file_get_contents(__DIR__."/cache/nearest_{$this->matrix_size}.dat"));
 	}
 
@@ -33,38 +33,37 @@ class RuzzleHack
 		$txts = glob($this->dict_path."/*.txt");
 		foreach ($txts as $txt)
 		{
+			echo "Analyzing {$txt}..\n";
 			foreach (file($txt) as $word)
 			{
 				$info = $this->calc_word_info($word);
 				$new_dict[$info['length']][$info['word']] = $info['chars'];
 			}
 		}
+		echo "Sorting dicts..\n";
 		ksort($new_dict);
 		foreach ($new_dict as $len => $words) {
 			uksort($words, $len_sort);
 			file_put_contents($this->dict_path."/set_{$len}.dat", serialize($words));
 		}
 		unset($new_dict);
-
 		file_put_contents($this->dict_path."/check", time());
+		echo "Sorting OK.\n";
 	}
 
 	public function prepare_nearest_map()
 	{
+		echo "Preparing nearest map..\n";
 		if (!is_dir(__DIR__."/cache")) mkdir(__DIR__."/cache");
 		$is_near = array();
-		for($y = 0; $y < $this->matrix_size; $y++ ){
-			for($x = 0; $x < $this->matrix_size; $x++ ){
-				for($y2 = 0; $y2 < $this->matrix_size; $y2++ ){
-					for($x2 = 0; $x2 < $this->matrix_size; $x2++ ){
-						$k = implode(',',[$x,$y,$x2,$y2]);
-						if((($x!==$x2) || ($y!==$y2)) && abs($x2-$x)<2 && abs($y2-$y)<2)
-							$is_near[$k] = true;
-					}
-				}
-			}
-		}
+		for($y = 0; $y < $this->matrix_size; $y++)
+		for($x = 0; $x < $this->matrix_size; $x++)
+		for($y2 = 0; $y2 < $this->matrix_size; $y2++)
+		for($x2 = 0; $x2 < $this->matrix_size; $x2++)
+			if ( ( ($x!==$x2)||($y!==$y2) ) && abs($x2-$x)<2 && abs($y2-$y)<2 )
+				$is_near[ implode(',',[$x,$y,$x2,$y2]) ] = true;
 		file_put_contents(__DIR__."/cache/nearest_{$this->matrix_size}.dat", serialize($is_near));
+		echo "Nearest map OK\n";
 	}
 
 	protected function print_path($path)
@@ -160,6 +159,8 @@ class RuzzleHack
 	public function load_set($matrix_string)
 	{
 		$this->matrix_string = strtolower($matrix_string);
+		if (strlen($this->matrix_string)!=16) die("Matrix string is not valid");
+
 		foreach (str_split($this->matrix_string, $this->matrix_size) as $y => $row) {
 			foreach ( str_split($row) as $x => $letter ) {
 				if (!isset($letter)) continue;

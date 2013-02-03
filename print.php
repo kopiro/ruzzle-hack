@@ -2,15 +2,19 @@
 
 include 'class.ruzzle.php';
 
-$r = new RuzzleHack();
+$r = new RuzzleHack($argv[1]);
 
-$r->init($argv[1]);
+$r->init();
 $r->load_set($argv[2]);
 
 echo "YOUR MATRIX:\n";
 $r->print_matrix();
 
-echo "YOUR WORDS:\n";
+echo PHP_EOL;
+echo "Calculating..\n";
 $r->calculate_words();
+
+echo "Sorting..\n";
 $r->order_words();
+
 $r->prettyprint_words();
