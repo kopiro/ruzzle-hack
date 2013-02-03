@@ -3,14 +3,15 @@
 ini_set('memory_limit', '2G');
 set_time_limit(-1);
 
-class RuzzleHack {
-
+class RuzzleHack
+{
 	protected $matrix = [];
 	protected $matrix_string = [];
 	protected $matrix_origins = [];
 	protected $matrix_size = 4;
 	protected $matrix_info = [];
 	protected $is_near = [];
+	protected $words = [];
 	protected $dict_path = 'ITA.dict';
 
 	public function __construct()
@@ -128,9 +129,9 @@ class RuzzleHack {
 		return true;
 	}
 
-	public function get_words($print=false)
+	public function calculate_words($print=false)
 	{
-		$valid_words = array();
+		$this->words = [];
 		for ($i=$this->matrix_info['length']; $i>1; $i--)
 		{
 			$dict_file = $this->dict_path."/set_{$i}.dat";
@@ -143,17 +144,16 @@ class RuzzleHack {
 				$path = $this->check_word($word);
 				if ($path===false) continue;
 				$word_info = ['word'=>$word, 'path'=>$path];
-				$valid_words[] = $word_info;
+				$this->words[] = $word_info;
 				if ($print===true) $this->print_word($word_info);
 			}
 		}
-		return $valid_words;
 	}
 
-	public function order_words(&$words)
+	public function order_words()
 	{
-		usort($words, function($a,$b){
-			return strlen($a['word'])<strlen($b['word']);
+		usort($this->words, function($a,$b){
+			return strlen($a['word'])>strlen($b['word']);
 		});
 	}
 
@@ -170,24 +170,6 @@ class RuzzleHack {
 		$this->matrix_info = $this->calc_word_info($matrix_string);
 	}
 
-	public function print_matrix()
-	{
-		foreach ($this->matrix as $row) {
-			foreach ($row as $letter) {
-				echo $letter." ";
-			}
-			echo PHP_EOL;
-		}
-		echo PHP_EOL;
-	}
-
-	public function print_word($word)
-	{
-		echo $word['word']." [";
-		foreach ($word['path'] as $p) echo sprintf("(%d,%d)",$p[0]+1,$p[1]+1);
-		echo "]",PHP_EOL;
-	}
-
 	protected function is_endpath_valid($path)
 	{
 		if (count($path)<=1) return true;
@@ -200,13 +182,47 @@ class RuzzleHack {
 		return isset($this->is_near[$k]);
 	}
 
-	public function solve()
+	public function print_matrix()
 	{
-		$words = $this->get_words(false);
-		$this->order_words($words);
-		foreach ($words as $w)
-		{
-			$this->print_word($w);
+		foreach ($this->matrix as $row) {
+			foreach ($row as $letter) {
+				echo $letter." ";
+			}
+			echo PHP_EOL;
+		}
+		echo PHP_EOL;
+	}
+
+	protected function print_word($word)
+	{
+		echo $word['word']." [";
+		foreach ($word['path'] as $p) echo sprintf("(%d,%d)",$p[0]+1,$p[1]+1);
+		echo "]",PHP_EOL;
+	}
+
+	protected function prettyprint_word($word)
+	{
+		echo chr(27)."[0;1m".$word['word'].chr(27).chr(27)."[0m".PHP_EOL;
+		foreach ($word['path'] as $p) echo sprintf("(%d,%d)",$p[0]+1,$p[1]+1);
+		echo PHP_EOL;
+		foreach ($this->matrix as $y => $row) {
+			foreach ($row as $x => $letter) {
+				if (in_array([$x,$y], $word['path'])) {
+					echo chr(27)."[0;31m{$letter}".chr(27).chr(27)."[0m";
+				} else {
+					echo $letter;
+				}
+				echo " ";
+			}
+			echo PHP_EOL;
+		}
+	}
+
+	public function prettyprint_words()
+	{
+		foreach ($this->words as $w) {
+			$this->prettyprint_word($w);
+			echo PHP_EOL;
 		}
 	}
 

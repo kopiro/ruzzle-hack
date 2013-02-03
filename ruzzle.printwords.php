@@ -11,4 +11,6 @@ echo "YOUR MATRIX:\n";
 $r->print_matrix();
 
 echo "YOUR WORDS:\n";
-$r->solve();
+$r->calculate_words();
+$r->order_words();
+$r->prettyprint_words();
