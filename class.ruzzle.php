@@ -1,10 +1,10 @@
 <?php
 
 ini_set('memory_limit', '2G');
-set_time_limit(-1);
+set_time_limit(0);
 
-class RuzzleHack
-{
+class RuzzleHack {
+
 	protected $matrix = [];
 	protected $matrix_string = [];
 	protected $matrix_origins = [];
@@ -14,19 +14,16 @@ class RuzzleHack
 	protected $words = [];
 	protected $dict_path;
 
-	public function __construct($lang='ENG')
-	{
+	public function __construct($lang='ENG') {
 		$this->dict_path = __DIR__."/".$lang.'.dict';
 	}
 
-	public function init()
-	{
+	public function init() {
 		if (!file_exists($this->dict_path.'/check')) die("No valid DICT ({$this->dict_path})");
 		$this->is_near = unserialize(file_get_contents(__DIR__."/cache/nearest_{$this->matrix_size}.dat"));
 	}
 
-	public function prepare_dict()
-	{
+	public function prepare_dict() {
 		$len_sort = function($a,$b){ return strlen($a)>strlen($b); };
 
 		$new_dict = [];
@@ -51,29 +48,25 @@ class RuzzleHack
 		echo "Sorting OK.\n";
 	}
 
-	public function prepare_nearest_map()
-	{
+	public function prepare_nearest_map() {
 		echo "Preparing nearest map..\n";
 		if (!is_dir(__DIR__."/cache")) mkdir(__DIR__."/cache");
 		$is_near = array();
-		for($y = 0; $y < $this->matrix_size; $y++)
-		for($x = 0; $x < $this->matrix_size; $x++)
-		for($y2 = 0; $y2 < $this->matrix_size; $y2++)
-		for($x2 = 0; $x2 < $this->matrix_size; $x2++)
+		for ($y = 0; $y < $this->matrix_size; $y++)
+		for ($x = 0; $x < $this->matrix_size; $x++)
+		for ($y2 = 0; $y2 < $this->matrix_size; $y2++)
+		for ($x2 = 0; $x2 < $this->matrix_size; $x2++)
 			if ( ( ($x!==$x2)||($y!==$y2) ) && abs($x2-$x)<2 && abs($y2-$y)<2 )
 				$is_near[ implode(',',[$x,$y,$x2,$y2]) ] = true;
 		file_put_contents(__DIR__."/cache/nearest_{$this->matrix_size}.dat", serialize($is_near));
-		echo "Nearest map OK\n";
 	}
 
-	protected function print_path($path)
-	{
+	protected function print_path($path) {
 		foreach ($path as $p)
 			echo sprintf("(%d,%d)",$p[0]+1,$p[1]+1);
 	}
 
-	protected function check_word($word, $start=0, $path=[])
-	{
+	protected function check_word($word, $start=0, $path=[]) {
 		static $found;
 
 		if ($start==0) $found = false;
@@ -82,21 +75,14 @@ class RuzzleHack
 		$c = $word[$start];
 		if (!isset($c)) return;
 
-		foreach ($this->matrix_origins[$c] as $origin)
-		{
+		foreach ($this->matrix_origins[$c] as $origin) {
 			if ($found) return $found;
-			if (!in_array($origin, $path))
-			{
+			if (!in_array($origin, $path)) {
 				array_push($path, $origin);
-				if ($this->is_endpath_valid($path))
-				{
-					if ( true===$this->check_word($word, $start+1, $path) ) $found = $path;
+				if ($this->is_endpath_valid($path)) {
+					if (true===$this->check_word($word, $start+1, $path)) $found = $path;
 					array_pop($path);
-				}
-				else
-				{
-					array_pop($path);
-				}
+				} else array_pop($path);
 			}
 		}
 
@@ -104,8 +90,7 @@ class RuzzleHack
 		return false;
 	}
 
-	protected function calc_word_info($word)
-	{
+	protected function calc_word_info($word) {
 		$word = trim(strtolower($word));
 		$info = array();
 		$charset = str_split($word);
@@ -119,27 +104,23 @@ class RuzzleHack
 		return $info;
 	}
 
-	protected function inmatrix_word($charset)
-	{
+	protected function inmatrix_word($charset) {
 		foreach ($charset as $char => $count) {
-			if ( !array_key_exists($char,$this->matrix_info['chars']) ) return false;
-			if ( $count>$this->matrix_info['chars'][$char] ) return false;
+			if (!array_key_exists($char,$this->matrix_info['chars'])) return false;
+			if ($count>$this->matrix_info['chars'][$char]) return false;
 		}
 		return true;
 	}
 
-	public function calculate_words($print=false)
-	{
+	public function calculate_words($print=false) {
 		$this->words = [];
-		for ($i=$this->matrix_info['length']; $i>1; $i--)
-		{
+		for ($i=$this->matrix_info['length']; $i>1; $i--) {
 			$dict_file = $this->dict_path."/set_{$i}.dat";
-			if (!file_exists($dict_file)) { continue; }
-
+			if (!file_exists($dict_file)) continue;
 			$words = unserialize(file_get_contents($dict_file));
-			foreach ($words as $word => $charset)
-			{
-				if ( !$this->inmatrix_word($charset) ) continue;
+
+			foreach ($words as $word => $charset) {
+				if (!$this->inmatrix_word($charset)) continue;
 				$path = $this->check_word($word);
 				if ($path===false) continue;
 				$word_info = ['word'=>$word, 'path'=>$path];
@@ -149,15 +130,13 @@ class RuzzleHack
 		}
 	}
 
-	public function order_words()
-	{
+	public function order_words() {
 		usort($this->words, function($a,$b){
 			return strlen($a['word'])>strlen($b['word']);
 		});
 	}
 
-	public function load_set($matrix_string)
-	{
+	public function load_set($matrix_string) {
 		$this->matrix_string = strtolower($matrix_string);
 		if (strlen($this->matrix_string)!=16) die("Matrix string is not valid");
 
@@ -171,38 +150,31 @@ class RuzzleHack
 		$this->matrix_info = $this->calc_word_info($matrix_string);
 	}
 
-	protected function is_endpath_valid($path)
-	{
+	protected function is_endpath_valid($path) {
 		if (count($path)<=1) return true;
 		return $this->are_near($path[count($path)-2], $path[count($path)-1]);
 	}
 
-	protected function are_near($a, $b)
-	{
+	protected function are_near($a, $b) {
 		$k = implode(',', array($a[0],$a[1],$b[0],$b[1]));
 		return isset($this->is_near[$k]);
 	}
 
-	public function print_matrix()
-	{
+	public function print_matrix() {
 		foreach ($this->matrix as $row) {
-			foreach ($row as $letter) {
-				echo $letter." ";
-			}
+			foreach ($row as $letter) echo $letter." ";
 			echo PHP_EOL;
 		}
 		echo PHP_EOL;
 	}
 
-	protected function print_word($word)
-	{
+	protected function print_word($word) {
 		echo $word['word']." [";
 		foreach ($word['path'] as $p) echo sprintf("(%d,%d)",$p[0]+1,$p[1]+1);
 		echo "]",PHP_EOL;
 	}
 
-	protected function prettyprint_word($word)
-	{
+	protected function prettyprint_word($word) {
 		echo chr(27)."[0;1m".$word['word'].chr(27).chr(27)."[0m".PHP_EOL;
 		foreach ($word['path'] as $p) echo sprintf("(%d,%d)",$p[0]+1,$p[1]+1);
 		echo PHP_EOL;
@@ -219,8 +191,7 @@ class RuzzleHack
 		}
 	}
 
-	public function prettyprint_words()
-	{
+	public function prettyprint_words() {
 		foreach ($this->words as $w) {
 			$this->prettyprint_word($w);
 			echo PHP_EOL;

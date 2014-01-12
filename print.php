@@ -1,7 +1,8 @@
 <?php
 
-include 'class.ruzzle.php';
+if (empty($argv[1])) die("Usage: php gendict.php {LANG} {LINEARMATRIX}");
 
+include 'class.ruzzle.php';
 $r = new RuzzleHack($argv[1]);
 
 $r->init();

@@ -1,23 +1,32 @@
 # RuzzleHack: RuzzleSolver in PHP
 
-## Require
+### Requirements
 
 * PHP 5.4>=
+* If you install [**HHVM**](http://www.hhvm.com/), PHP run faster: so replace `php` with `hhvm`
 
-## Installation
+### Installation
 
-* Clone the repo or download it
-* Create a folder YOURLANG.dict and put some *.txt files that contains the word, EOF delimited
-* Run in console `php ruzzle.gendict.php`, and wait
-* Run `php ruzzle.printwords.php YOURLANG YOURLINEARMATRIX`
+Clone this repository: `git clone https://github.com/kopiro/RuzzleHack.git`
 
-Enjoy it.
+Now, find some *.txt files that contains words for your language, EOL delimited.
 
-### Dicts
+Create a directory `{LANG}.dict` in RuzzleHack, put inside your txt files.
 
-ITA Dicts: http://www.gilda.it/giochidiparole/elenchi.htm
+Now, run `php gendict.php {LANG}`.
 
-### Developers
+### Usage
 
-* kopiro (destefano.flavio@gmail.com)
-* lastguest (lastguest@gmail.com)
+Use simply with: `php print.php {LANG} {LINEARMATRIX}`
+
+`{LINEARMATRIX}` is the Ruzzle matrix, linearized.
+
+### Dictionaries yet ready
+
+* **Italian**: [http://cl.ly/0W0z2h3g3F0c](http://cl.ly/0W0z2h3g3F0c)
+
+#### Developers
+
+[Flavio De Stefano](https://github.com/kopiro)
+
+[Stefano Azzolini](https://github.com/lastguest)
